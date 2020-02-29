@@ -2,6 +2,12 @@ import { spawn } from 'child_process';
 
 export default () =>
   new Promise((resolve, reject) => {
+    if (process.argv.includes('--no-mocks')) {
+      process.env.NO_MOCKS = 'true';
+      resolve();
+      return;
+    }
+
     const mockApi = spawn('amplify', ['mock', 'api']);
     let err = '';
 
