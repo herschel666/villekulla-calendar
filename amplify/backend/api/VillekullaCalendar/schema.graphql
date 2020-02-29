@@ -1,0 +1,8 @@
+type CalendarEntry @model {
+  id: ID!
+  creator: ID!
+  start: AWSDateTime!
+  end: AWSDateTime!
+  title: String!
+  description: String
+}
