@@ -26,7 +26,7 @@ module.exports = {
     browser: true,
     jest: true,
     node: true,
-    es7: true,
+    es6: true,
   },
   rules: {
     'react/prop-types': 'off',

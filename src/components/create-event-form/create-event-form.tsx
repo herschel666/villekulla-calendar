@@ -1,96 +1,71 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { API, graphqlOperation as gql } from 'aws-amplify';
+import moment, { Moment } from 'moment';
+import { TimePicker, DatePicker } from 'antd';
 
-export interface FormState {
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-}
+import { createCalendarEntry as CreateCalendarEntry } from '../../graphql/mutations';
+import {
+  reducer,
+  startRequest,
+  endRequest,
+  formAction,
+  dateTimeAction,
+  getInitialState,
+  FormState,
+  DateTimeFields,
+} from './state';
 
-interface State {
-  loading: boolean;
-}
+((window as unknown) as { moment: typeof moment }).moment = moment;
 
-type Reducer = FormState & State;
+const getinitialDate = (dateString: string | null): Moment =>
+  moment(dateString || new Date(), 'YYYY-MM-DD');
 
-interface StartRequest {
-  type: 'START_REQUEST';
-}
-const START_REQUEST = 'START_REQUEST';
-const startRequest = (): StartRequest => ({
-  type: START_REQUEST,
-});
-
-interface EndRequest {
-  type: 'END_REQUEST';
-}
-const END_REQUEST = 'END_REQUEST';
-const endRequest = (): EndRequest => ({
-  type: END_REQUEST,
-});
-
-interface FormAction {
-  type: 'FORM_ACTION';
-  payload: {
-    field: keyof FormState;
-    value: string;
-  };
-}
-const FORM_ACTION = 'FORM_ACTION';
-const formAction = (field: keyof FormState, value: string): FormAction => ({
-  type: FORM_ACTION,
-  payload: { field, value },
-});
-
-type Action = StartRequest | EndRequest | FormAction;
-
-interface Props {
-  onSubmit: (args: FormState) => Promise<void>;
-}
-
-const initialState: Reducer = {
-  title: '',
-  description: '',
-  startTime: '',
-  endTime: '',
-  loading: false,
-};
-
-const reducer = (state: Reducer, action: Action): Reducer => {
-  switch (action.type) {
-    case START_REQUEST: {
-      return { ...state, loading: true };
-    }
-    case END_REQUEST: {
-      return { ...initialState };
-    }
-    case FORM_ACTION: {
-      return { ...state, [action.payload.field]: action.payload.value };
-    }
-    default:
-      return state;
-  }
-};
-
-export const CreateEventForm: React.FC<Props> = ({ onSubmit }) => {
+export const CreateEventForm: React.FC<RouteComponentProps> = ({
+  location: { search },
+  history,
+}) => {
+  const query = new URLSearchParams(search);
+  const initialDate = getinitialDate(query.get('date'));
   const [state, dispatch] = React.useReducer<typeof reducer>(
     reducer,
-    initialState
+    getInitialState(initialDate)
   );
   const handleChange = (field: keyof FormState) => (
     evnt: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => dispatch(formAction(field, evnt.currentTarget.value.trim()));
+  const handleDateTimeChange = (field: DateTimeFields) => (
+    time: Moment | null
+  ) => dispatch(dateTimeAction(field, time));
   const handleSubmit = async (evnt: React.SyntheticEvent) => {
     evnt.preventDefault();
+    const { title, date, startTime, endTime, description } = state;
+
+    if (!title || !date || !startTime || !endTime) {
+      return;
+    }
+
     dispatch(startRequest());
-    // eslint-disable-next-line no-unused-vars
-    const { loading, ...formState } = state;
-    await onSubmit(formState as FormState);
-    dispatch(endRequest());
+    const dateString = date.format('YYYY-MM-DD');
+    const input = {
+      creator: 'xfghfxghfxghdfghdxghxgxgb',
+      title: title,
+      start: `${dateString} ${startTime.format('HH:mm')}:00`,
+      end: `${dateString} ${endTime.format('HH:mm')}:00`,
+      description: description || null,
+    };
+    try {
+      await API.graphql(gql(CreateCalendarEntry, { input }));
+      history.push(`/calendar/${date.format('YYYY-MM')}/`);
+    } catch (err) {
+      console.log('error creating entry...', err);
+      dispatch(endRequest());
+    }
   };
+  const handleReset = () => history.push('/');
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form method="post" onSubmit={handleSubmit} onReset={handleReset}>
       <fieldset>
         <legend>Termin anlegen…</legend>
         <div>
@@ -103,21 +78,35 @@ export const CreateEventForm: React.FC<Props> = ({ onSubmit }) => {
           />
         </div>
         <div>
-          <label htmlFor="startTime">Uhrzeit (Start)</label>
-          <input
-            type="text"
-            id="startTime"
-            onInput={handleChange('startTime')}
+          <label htmlFor="date">Datum</label>
+          <DatePicker
+            onChange={handleDateTimeChange('date')}
+            format="DD.MM.YYYY"
             disabled={state.loading}
+            defaultValue={state.date || void 0}
+            value={state.date}
+          />
+        </div>
+        <div>
+          <label htmlFor="startTime">Uhrzeit (Start)</label>
+          <TimePicker
+            onChange={handleDateTimeChange('startTime')}
+            format="HH:mm"
+            minuteStep={15}
+            disabled={state.loading}
+            defaultValue={state.startTime || void 0}
+            value={state.startTime}
           />
         </div>
         <div>
           <label htmlFor="endTime">Uhrzeit (Ende)</label>
-          <input
-            type="text"
-            id="endTime"
-            onInput={handleChange('endTime')}
+          <TimePicker
+            onChange={handleDateTimeChange('endTime')}
+            format="HH:mm"
+            minuteStep={15}
             disabled={state.loading}
+            defaultValue={state.endTime || void 0}
+            value={state.endTime}
           />
         </div>
         <div>
@@ -129,6 +118,7 @@ export const CreateEventForm: React.FC<Props> = ({ onSubmit }) => {
           ></textarea>
         </div>
       </fieldset>
+      <button type="reset">Abbrechen</button>
       <button disabled={state.loading}>Absenden</button>
     </form>
   );

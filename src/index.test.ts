@@ -1,4 +1,4 @@
-import format from 'date-fns/format';
+import moment from 'moment';
 
 // @ts-ignore
 beforeAll(() => {
@@ -24,9 +24,9 @@ it('renders the app & redirects to the current month view', async () => {
   expect(location.pathname).toBe('/');
 
   await import('.');
-  const date = new Date();
+  const date = moment(new Date(), moment.ISO_8601, 'en');
   const { innerHTML: html } = document.getElementById('mount')!;
 
-  expect(location.pathname).toBe(`/calendar/${format(date, 'yyyy-MM')}/`);
-  expect(html).toContain(format(date, 'MMMM yyyy'));
+  expect(location.pathname).toBe(`/calendar/${date.format('YYYY-MM')}/`);
+  expect(html).toContain(date.format('MMMM YYYY'));
 });

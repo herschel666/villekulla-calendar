@@ -5,14 +5,10 @@ import FullCalendar from '@fullcalendar/react';
 import View from '@fullcalendar/core/View';
 import { EventInput } from '@fullcalendar/core/structs/event';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import format from 'date-fns/format';
-import sub from 'date-fns/sub';
-import add from 'date-fns/add';
+import interactionPlugin from '@fullcalendar/interaction';
+import moment from 'moment';
 
-import { createCalendarEntry as CreateCalendarEntry } from '../../graphql/mutations';
 import { listCalendarEntrys as ListCalendarEntrys } from '../../graphql/queries';
-import { CreateEventForm } from '../create-event-form';
-import { FormState } from '../create-event-form/create-event-form';
 
 interface DateClickArgs {
   date: Date;
@@ -36,28 +32,31 @@ const VIEW_TYPE = 'dayGridMonth';
 export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   const currentMonth = Object.values(params).join('-');
   const defaultDate = currentMonth.concat('-01');
-  console.log('defaultDate', defaultDate);
   const customButtons = {
     navigationToday: {
       text: 'Heute',
       click: () => {
-        history.push(`/calendar/${format(new Date(), 'yyyy-MM')}/`);
+        history.push(`/calendar/${moment().format('YYYY-MM')}/`);
       },
     },
     navigationPrev: {
       text: '',
       icon: 'chevron-left',
       click: () => {
-        const prev = sub(new Date(defaultDate), { months: 1 });
-        history.push(`/calendar/${format(prev, 'yyyy-MM')}/`);
+        const date = moment(new Date(defaultDate))
+          .subtract(1, 'months')
+          .format('YYYY-MM');
+        history.push(`/calendar/${date}/`);
       },
     },
     navigationNext: {
       text: '',
       icon: 'chevron-right',
       click: () => {
-        const next = add(new Date(defaultDate), { months: 1 });
-        history.push(`/calendar/${format(next, 'yyyy-MM')}/`);
+        const date = moment(new Date(defaultDate))
+          .add(1, 'months')
+          .format('YYYY-MM');
+        history.push(`/calendar/${date}/`);
       },
     },
   };
@@ -68,10 +67,10 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   };
   const calendarComponentRef = React.useRef<FullCalendar | null>(null);
   const [entries, setEntries] = React.useState<Array<unknown>>([]);
-  const [date, setDate] = React.useState<string | null>(null);
 
   const handleDateClick = (args: DateClickArgs) => {
-    setDate(format(args.date, 'yyyy-MM-dd'));
+    const dateString = moment(args.date).format('YYYY-MM-DD');
+    history.push(`/calendar/new/?date=${dateString}`);
   };
   const loadEntries = React.useCallback(async () => {
     const { data } = await API.graphql(
@@ -91,21 +90,6 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
       )
     );
   }, [currentMonth]);
-  const handleSubmit = async (args: FormState) => {
-    const input = {
-      creator: 'xfghfxghfxghdfghdxghxgxgb',
-      title: args.title,
-      start: `${date} ${args.startTime}`,
-      end: `${date} ${args.endTime}`,
-      description: args.description || null,
-    };
-    try {
-      await API.graphql(gql(CreateCalendarEntry, { input }));
-      loadEntries();
-    } catch (err) {
-      console.log('error creating entry...', err);
-    }
-  };
 
   React.useEffect(() => {
     loadEntries();
@@ -121,18 +105,12 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
         dateClick={handleDateClick}
         eventClick={console.log}
         defaultView={VIEW_TYPE}
-        plugins={[dayGridPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin]}
         customButtons={customButtons}
         header={header}
         events={entries}
         defaultDate={defaultDate}
       />
-      {Boolean(date) && (
-        <>
-          <hr />
-          <CreateEventForm onSubmit={handleSubmit} />
-        </>
-      )}
     </div>
   );
 };
