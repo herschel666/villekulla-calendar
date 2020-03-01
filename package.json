@@ -31,7 +31,7 @@
     "@fullcalendar/daygrid": "4.4.0",
     "@fullcalendar/interaction": "4.4.0",
     "@fullcalendar/react": "4.4.0",
-    "aws-amplify": "2.2.5",
+    "aws-amplify": "2.2.6",
     "aws-amplify-react": "3.1.6",
     "date-fns": "2.10.0",
     "react": "16.13.0",
