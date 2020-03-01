@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import moment from 'moment';
+import format from 'date-fns/format';
 
 import { Calendar } from '../calendar';
 import { CreateEventForm } from '../create-event-form';
@@ -9,7 +9,7 @@ export const App = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/(calendar/)?" exact={true}>
-        <Redirect from="/" to={`/calendar/${moment().format('YYYY-MM')}/`} />
+        <Redirect from="/" to={`/calendar/${format(new Date(), 'yyyy-MM')}/`} />
       </Route>
       <Route
         path="/calendar/:year([0-9]{4})-:month([0-9]{2})/"

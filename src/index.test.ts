@@ -1,4 +1,11 @@
-import moment from 'moment';
+import format from 'date-fns/format';
+
+// jsdom seems to have an Umlaut™ issue...
+jest.mock('@fullcalendar/core/locales/de', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const en = require('@fullcalendar/core/locales/en-gb');
+  return en;
+});
 
 // @ts-ignore
 beforeAll(() => {
@@ -24,9 +31,9 @@ it('renders the app & redirects to the current month view', async () => {
   expect(location.pathname).toBe('/');
 
   await import('.');
-  const date = moment(new Date(), moment.ISO_8601, 'en');
+  const date = new Date();
   const { innerHTML: html } = document.getElementById('mount')!;
 
-  expect(location.pathname).toBe(`/calendar/${date.format('YYYY-MM')}/`);
-  expect(html).toContain(date.format('MMMM YYYY'));
+  expect(location.pathname).toBe(`/calendar/${format(date, 'yyyy-MM')}/`);
+  expect(html).toContain(format(date, 'MMMM yyyy'));
 });

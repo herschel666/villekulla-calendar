@@ -1,8 +1,14 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
 import { API, graphqlOperation as gql } from 'aws-amplify';
-import moment, { Moment } from 'moment';
-import { TimePicker, DatePicker } from 'antd';
+import format from 'date-fns/format';
+import formatISO from 'date-fns/formatISO';
+import roundToNearestMinutes from 'date-fns/roundToNearestMinutes';
+import isDate from 'date-fns/isDate';
+import isValid from 'date-fns/isValid';
+import de from 'date-fns/locale/de';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { createCalendarEntry as CreateCalendarEntry } from '../../graphql/mutations';
 import {
@@ -16,10 +22,14 @@ import {
   DateTimeFields,
 } from './state';
 
-((window as unknown) as { moment: typeof moment }).moment = moment;
-
-const getinitialDate = (dateString: string | null): Moment =>
-  moment(dateString || new Date(), 'YYYY-MM-DD');
+const getinitialDate = (dateString: string | null): Date => {
+  const now = new Date();
+  const date = dateString
+    ? new Date(`${dateString}T${formatISO(now, { representation: 'time' })}`)
+    : now;
+  const isValidDate = isDate(date) && isValid(date);
+  return roundToNearestMinutes(isValidDate ? date : now, { nearestTo: 15 });
+};
 
 export const CreateEventForm: React.FC<RouteComponentProps> = ({
   location: { search },
@@ -34,29 +44,27 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
   const handleChange = (field: keyof FormState) => (
     evnt: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => dispatch(formAction(field, evnt.currentTarget.value.trim()));
-  const handleDateTimeChange = (field: DateTimeFields) => (
-    time: Moment | null
-  ) => dispatch(dateTimeAction(field, time));
+  const handleDateTimeChange = (field: DateTimeFields) => (time: Date) =>
+    dispatch(dateTimeAction(field, time));
   const handleSubmit = async (evnt: React.SyntheticEvent) => {
     evnt.preventDefault();
-    const { title, date, startTime, endTime, description } = state;
+    const { title, startTime, endTime, description } = state;
 
-    if (!title || !date || !startTime || !endTime) {
+    if (!title || !startTime || !endTime) {
       return;
     }
 
     dispatch(startRequest());
-    const dateString = date.format('YYYY-MM-DD');
     const input = {
       creator: 'xfghfxghfxghdfghdxghxgxgb',
       title: title,
-      start: `${dateString} ${startTime.format('HH:mm')}:00`,
-      end: `${dateString} ${endTime.format('HH:mm')}:00`,
+      start: formatISO(startTime),
+      end: formatISO(endTime),
       description: description || null,
     };
     try {
       await API.graphql(gql(CreateCalendarEntry, { input }));
-      history.push(`/calendar/${date.format('YYYY-MM')}/`);
+      history.push(`/calendar/${format(startTime, 'yyyy-MM')}/`);
     } catch (err) {
       console.log('error creating entry...', err);
       dispatch(endRequest());
@@ -81,32 +89,39 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
           <label htmlFor="date">Datum</label>
           <DatePicker
             onChange={handleDateTimeChange('date')}
-            format="DD.MM.YYYY"
             disabled={state.loading}
-            defaultValue={state.date || void 0}
-            value={state.date}
+            selected={state.date}
+            minDate={new Date()}
+            dateFormat="d. MMMM yyyy"
+            locale={de}
           />
         </div>
         <div>
           <label htmlFor="startTime">Uhrzeit (Start)</label>
-          <TimePicker
+          <DatePicker
             onChange={handleDateTimeChange('startTime')}
-            format="HH:mm"
-            minuteStep={15}
+            showTimeSelect={true}
+            showTimeSelectOnly={true}
+            timeIntervals={15}
+            timeCaption="Time"
+            dateFormat="HH:mm"
             disabled={state.loading}
-            defaultValue={state.startTime || void 0}
-            value={state.startTime}
+            selected={state.startTime}
+            locale={de}
           />
         </div>
         <div>
           <label htmlFor="endTime">Uhrzeit (Ende)</label>
-          <TimePicker
+          <DatePicker
             onChange={handleDateTimeChange('endTime')}
-            format="HH:mm"
-            minuteStep={15}
+            showTimeSelect={true}
+            showTimeSelectOnly={true}
+            timeIntervals={15}
+            timeCaption="Time"
+            dateFormat="HH:mm"
             disabled={state.loading}
-            defaultValue={state.endTime || void 0}
-            value={state.endTime}
+            selected={state.endTime}
+            locale={de}
           />
         </div>
         <div>

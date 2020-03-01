@@ -1,11 +1,17 @@
-import { Moment } from 'moment';
+import formatISO from 'date-fns/formatISO';
+import add from 'date-fns/add';
+import sub from 'date-fns/sub';
+import isEqual from 'date-fns/isEqual';
+import isBefore from 'date-fns/isBefore';
+import isAfter from 'date-fns/isAfter';
+import isSameDay from 'date-fns/isSameDay';
 
 export interface FormState {
   title: string;
   description: string;
-  date: Moment | null;
-  startTime: Moment | null;
-  endTime: Moment | null;
+  date: Date;
+  startTime: Date;
+  endTime: Date;
 }
 export type DateTimeFields = keyof Pick<
   FormState,
@@ -54,13 +60,13 @@ interface DateTimeAction {
   type: 'DATE_TIME_ACTION';
   payload: {
     field: DateTimeFields;
-    value: Moment | null;
+    value: Date;
   };
 }
 const DATE_TIME_ACTION = 'DATE_TIME_ACTION';
 export const dateTimeAction = (
   field: DateTimeFields,
-  value: Moment | null
+  value: Date
 ): DateTimeAction => ({
   type: DATE_TIME_ACTION,
   payload: { field, value },
@@ -68,12 +74,12 @@ export const dateTimeAction = (
 
 type Action = StartRequest | EndRequest | FormAction | DateTimeAction;
 
-export const getInitialState = (dateTime: Moment): Reducer => ({
+export const getInitialState = (date: Date): Reducer => ({
   title: '',
   description: '',
-  date: dateTime,
-  startTime: dateTime,
-  endTime: dateTime.add(1, 'hours'),
+  date,
+  startTime: date,
+  endTime: add(date, { hours: 1 }),
   loading: false,
 });
 
@@ -91,19 +97,29 @@ export const reducer = (state: Reducer, action: Action): Reducer => {
     case DATE_TIME_ACTION: {
       let { startTime, endTime } = state;
 
-      if (action.payload.value) {
-        if (
-          action.payload.field === 'startTime' &&
-          action.payload.value.isAfter(endTime || undefined)
-        ) {
-          endTime = action.payload.value.add(1, 'hours');
-        }
-        if (
-          action.payload.field === 'endTime' &&
-          action.payload.value.isBefore(startTime || undefined)
-        ) {
-          startTime = action.payload.value.subtract(1, 'hours');
-        }
+      if (
+        action.payload.field === 'startTime' &&
+        (isAfter(startTime, endTime) || isEqual(startTime, endTime))
+      ) {
+        endTime = add(startTime, { hours: 1 });
+      }
+      if (action.payload.field === 'endTime' && isBefore(endTime, startTime)) {
+        startTime = sub(startTime, { hours: 1 });
+      }
+      if (
+        action.payload.field === 'date' &&
+        (!isSameDay(action.payload.value, startTime) ||
+          !isSameDay(action.payload.value, endTime))
+      ) {
+        const dateString = formatISO(action.payload.value, {
+          representation: 'date',
+        });
+        startTime = new Date(
+          `${dateString}T${formatISO(startTime, { representation: 'time' })}`
+        );
+        endTime = new Date(
+          `${dateString}T${formatISO(endTime, { representation: 'time' })}`
+        );
       }
 
       return {

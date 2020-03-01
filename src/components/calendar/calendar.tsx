@@ -6,9 +6,14 @@ import View from '@fullcalendar/core/View';
 import { EventInput } from '@fullcalendar/core/structs/event';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import moment from 'moment';
+import format from 'date-fns/format';
+import sub from 'date-fns/sub';
+import add from 'date-fns/add';
 
 import { listCalendarEntrys as ListCalendarEntrys } from '../../graphql/queries';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const deLocale = require('@fullcalendar/core/locales/de');
 
 interface DateClickArgs {
   date: Date;
@@ -36,27 +41,23 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
     navigationToday: {
       text: 'Heute',
       click: () => {
-        history.push(`/calendar/${moment().format('YYYY-MM')}/`);
+        history.push(`/calendar/${format(new Date(), 'yyyy-MM')}/`);
       },
     },
     navigationPrev: {
       text: '',
       icon: 'chevron-left',
       click: () => {
-        const date = moment(new Date(defaultDate))
-          .subtract(1, 'months')
-          .format('YYYY-MM');
-        history.push(`/calendar/${date}/`);
+        const prev = sub(new Date(defaultDate), { months: 1 });
+        history.push(`/calendar/${format(prev, 'yyyy-MM')}/`);
       },
     },
     navigationNext: {
       text: '',
       icon: 'chevron-right',
       click: () => {
-        const date = moment(new Date(defaultDate))
-          .add(1, 'months')
-          .format('YYYY-MM');
-        history.push(`/calendar/${date}/`);
+        const next = add(new Date(defaultDate), { months: 1 });
+        history.push(`/calendar/${format(next, 'yyyy-MM')}/`);
       },
     },
   };
@@ -69,7 +70,7 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   const [entries, setEntries] = React.useState<Array<unknown>>([]);
 
   const handleDateClick = (args: DateClickArgs) => {
-    const dateString = moment(args.date).format('YYYY-MM-DD');
+    const dateString = format(new Date(args.date), 'yyyy-MM-dd');
     history.push(`/calendar/new/?date=${dateString}`);
   };
   const loadEntries = React.useCallback(async () => {
@@ -102,6 +103,7 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
     <div>
       <FullCalendar
         ref={calendarComponentRef}
+        locale={deLocale}
         dateClick={handleDateClick}
         eventClick={console.log}
         defaultView={VIEW_TYPE}
