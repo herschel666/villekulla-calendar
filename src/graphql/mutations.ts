@@ -9,6 +9,7 @@ export const createCalendarEntry = /* GraphQL */ `
     createCalendarEntry(input: $input, condition: $condition) {
       id
       creator
+      calendar
       start
       end
       title
@@ -24,6 +25,7 @@ export const updateCalendarEntry = /* GraphQL */ `
     updateCalendarEntry(input: $input, condition: $condition) {
       id
       creator
+      calendar
       start
       end
       title
@@ -39,6 +41,7 @@ export const deleteCalendarEntry = /* GraphQL */ `
     deleteCalendarEntry(input: $input, condition: $condition) {
       id
       creator
+      calendar
       start
       end
       title

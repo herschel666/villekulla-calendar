@@ -1,15 +1,20 @@
 {
     "test": {
         "awscloudformation": {
-            "AuthRoleName": "amplify-villekulla-calendar-test-201854-authRole",
-            "UnauthRoleArn": "arn:aws:iam::854871552397:role/amplify-villekulla-calendar-test-201854-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::854871552397:role/amplify-villekulla-calendar-test-201854-authRole",
+            "AuthRoleName": "amplify-villekulla-calendar-test-173437-authRole",
+            "UnauthRoleArn": "arn:aws:iam::854871552397:role/amplify-villekulla-calendar-test-173437-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::854871552397:role/amplify-villekulla-calendar-test-173437-authRole",
             "Region": "eu-central-1",
-            "DeploymentBucketName": "amplify-villekulla-calendar-test-201854-deployment",
-            "UnauthRoleName": "amplify-villekulla-calendar-test-201854-unauthRole",
-            "StackName": "amplify-villekulla-calendar-test-201854",
-            "StackId": "arn:aws:cloudformation:eu-central-1:854871552397:stack/amplify-villekulla-calendar-test-201854/dff01f90-58cc-11ea-b04c-026925054f2e",
-            "AmplifyAppId": "d3h2ns8cyhs9p6"
+            "DeploymentBucketName": "amplify-villekulla-calendar-test-173437-deployment",
+            "UnauthRoleName": "amplify-villekulla-calendar-test-173437-unauthRole",
+            "StackName": "amplify-villekulla-calendar-test-173437",
+            "StackId": "arn:aws:cloudformation:eu-central-1:854871552397:stack/amplify-villekulla-calendar-test-173437/de2ebc90-66da-11ea-9601-0a176ee37dc4",
+            "AmplifyAppId": "d20dce5k26d80y"
+        },
+        "categories": {
+            "auth": {
+                "villekullacalendar81179990": {}
+            }
         }
     }
 }

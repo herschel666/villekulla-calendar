@@ -1,6 +1,18 @@
-type CalendarEntry @model {
+enum Calendar {
+  COMMON_ROOM
+}
+
+type CalendarEntry
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "creator" }
+      { allow: private, operations: [read] }
+    ]
+  ) {
   id: ID!
   creator: ID!
+  calendar: Calendar!
   start: AWSDateTime!
   end: AWSDateTime!
   title: String!

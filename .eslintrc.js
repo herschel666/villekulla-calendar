@@ -34,5 +34,6 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
     'react/jsx-no-bind': 'off',
     '@typescript-eslint/ban-ts-ignore': 'warn',
+    '@typescript-eslint/explicit-function-return-type': 'off',
   },
 };

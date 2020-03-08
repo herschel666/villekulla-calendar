@@ -1,6 +1,7 @@
-import formatISO from 'date-fns/formatISO';
+import format from 'date-fns/format';
 import add from 'date-fns/add';
 import sub from 'date-fns/sub';
+import set from 'date-fns/set';
 import isEqual from 'date-fns/isEqual';
 import isBefore from 'date-fns/isBefore';
 import isAfter from 'date-fns/isAfter';
@@ -78,10 +79,16 @@ export const getInitialState = (date: Date): Reducer => ({
   title: '',
   description: '',
   date,
-  startTime: date,
-  endTime: add(date, { hours: 1 }),
+  startTime: new Date(date),
+  endTime: add(new Date(date), { hours: 1 }),
   loading: false,
 });
+
+const mergeTimeAndDate = (date: Date, time: Date): Date => {
+  const hours = Number(format(time, 'HH'));
+  const minutes = Number(format(time, 'mm'));
+  return set(date, { hours, minutes });
+};
 
 export const reducer = (state: Reducer, action: Action): Reducer => {
   switch (action.type) {
@@ -95,38 +102,36 @@ export const reducer = (state: Reducer, action: Action): Reducer => {
       return { ...state, [action.payload.field]: action.payload.value };
     }
     case DATE_TIME_ACTION: {
+      const { field } = action.payload;
       let { startTime, endTime } = state;
+      let { value } = action.payload;
 
       if (
-        action.payload.field === 'startTime' &&
+        field === 'startTime' &&
         (isAfter(startTime, endTime) || isEqual(startTime, endTime))
       ) {
         endTime = add(startTime, { hours: 1 });
       }
-      if (action.payload.field === 'endTime' && isBefore(endTime, startTime)) {
+      if (field === 'endTime' && isBefore(endTime, startTime)) {
         startTime = sub(startTime, { hours: 1 });
       }
-      if (
-        action.payload.field === 'date' &&
-        (!isSameDay(action.payload.value, startTime) ||
-          !isSameDay(action.payload.value, endTime))
-      ) {
-        const dateString = formatISO(action.payload.value, {
-          representation: 'date',
-        });
-        startTime = new Date(
-          `${dateString}T${formatISO(startTime, { representation: 'time' })}`
-        );
-        endTime = new Date(
-          `${dateString}T${formatISO(endTime, { representation: 'time' })}`
-        );
+      if (field === 'date') {
+        if (
+          !isSameDay(action.payload.value, startTime) ||
+          !isSameDay(action.payload.value, endTime)
+        ) {
+          startTime = mergeTimeAndDate(value, startTime);
+          endTime = mergeTimeAndDate(value, endTime);
+        }
+      } else {
+        value = mergeTimeAndDate(state.date, value);
       }
 
       return {
         ...state,
         endTime,
         startTime,
-        [action.payload.field]: action.payload.value,
+        [field]: value,
       };
     }
     default:
