@@ -21,24 +21,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install & initialize Amplify
-        run: |
-          npm install -g @aws-amplify/cli
-          mkdir -p ~/.aws && touch ~/.aws/{credentials,config}
-          amplify init \
-            --amplify "{ \
-              \"envName\": \"test\", \
-              \"appId\": \"${{ secrets.AMPLIFY_APP_ID }}\" \
-            }" \
-            --providers "{ \
-              \"awscloudformation\": { \
-                \"useProfile\": false, \
-                \"region\": \"eu-central-1\", \
-                \"accessKeyId\": \"${{ secrets.AWS_ACCESS_KEY_ID }}\", \
-                \"secretAccessKey\": \"${{ secrets.AWS_SECRET_ACCESS_KEY }}\" \
-              } \
-            }" \
-            --yes
+      - name: Mock-initialize Amplify
+        run: echo "export default {};" > src/aws-exports.js
 
       - name: Install dependencies
         run: npm install

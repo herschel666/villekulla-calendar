@@ -11,6 +11,7 @@ import de from 'date-fns/locale/de';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { createCalendarEntry as CreateCalendarEntry } from '../../graphql/mutations';
+import { useUser } from '../../hooks/use-user';
 import {
   reducer,
   startRequest,
@@ -35,6 +36,7 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
   location: { search },
   history,
 }) => {
+  const user = useUser();
   const query = new URLSearchParams(search);
   const initialDate = getinitialDate(query.get('date'));
   const [state, dispatch] = React.useReducer<typeof reducer>(
@@ -50,13 +52,14 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
     evnt.preventDefault();
     const { title, startTime, endTime, description } = state;
 
-    if (!title || !startTime || !endTime) {
+    if (!user || !title || !startTime || !endTime) {
       return;
     }
 
     dispatch(startRequest());
     const input = {
-      creator: 'xfghfxghfxghdfghdxghxgxgb',
+      creator: user.username,
+      calendar: 'COMMON_ROOM',
       title: title,
       start: formatISO(startTime),
       end: formatISO(endTime),
@@ -73,7 +76,7 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
   const handleReset = () => history.push('/');
 
   return (
-    <form method="post" onSubmit={handleSubmit} onReset={handleReset}>
+    <form method="post" onSubmit={handleSubmit}>
       <fieldset>
         <legend>Termin anlegen…</legend>
         <div>
@@ -81,24 +84,28 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
           <input
             type="text"
             id="title"
-            onInput={handleChange('title')}
+            onChange={handleChange('title')}
             disabled={state.loading}
+            required={true}
           />
         </div>
         <div>
-          <label htmlFor="date">Datum</label>
+          <label id="date">Datum</label>
           <DatePicker
+            ariaLabelledBy="date"
             onChange={handleDateTimeChange('date')}
             disabled={state.loading}
             selected={state.date}
             minDate={new Date()}
             dateFormat="d. MMMM yyyy"
             locale={de}
+            required={true}
           />
         </div>
         <div>
-          <label htmlFor="startTime">Uhrzeit (Start)</label>
+          <label id="startTime">Uhrzeit (Start)</label>
           <DatePicker
+            ariaLabelledBy="startTime"
             onChange={handleDateTimeChange('startTime')}
             showTimeSelect={true}
             showTimeSelectOnly={true}
@@ -108,11 +115,13 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
             disabled={state.loading}
             selected={state.startTime}
             locale={de}
+            required={true}
           />
         </div>
         <div>
-          <label htmlFor="endTime">Uhrzeit (Ende)</label>
+          <label id="endTime">Uhrzeit (Ende)</label>
           <DatePicker
+            ariaLabelledBy="endTime"
             onChange={handleDateTimeChange('endTime')}
             showTimeSelect={true}
             showTimeSelectOnly={true}
@@ -122,18 +131,21 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
             disabled={state.loading}
             selected={state.endTime}
             locale={de}
+            required={true}
           />
         </div>
         <div>
           <label htmlFor="description">Beschreibung</label>
           <textarea
             id="description"
-            onInput={handleChange('description')}
+            onChange={handleChange('description')}
             disabled={state.loading}
           ></textarea>
         </div>
       </fieldset>
-      <button type="reset">Abbrechen</button>
+      <button type="reset" onClick={handleReset}>
+        Abbrechen
+      </button>
       <button disabled={state.loading}>Absenden</button>
     </form>
   );

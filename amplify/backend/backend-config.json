@@ -1,4 +1,11 @@
 {
+	"auth": {
+		"villekullacalendar81179990": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	},
 	"api": {
 		"VillekullaCalendar": {
 			"service": "AppSync",
@@ -7,10 +14,9 @@
 				"authConfig": {
 					"additionalAuthenticationProviders": [],
 					"defaultAuthentication": {
-						"authenticationType": "API_KEY",
-						"apiKeyConfig": {
-							"description": "API key to retrieve Villekulla calendar data",
-							"apiKeyExpirationDays": "365"
+						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
+						"userPoolConfig": {
+							"userPoolId": "authvillekullacalendar81179990"
 						}
 					}
 				}

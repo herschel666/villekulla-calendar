@@ -6,6 +6,7 @@ export const getCalendarEntry = /* GraphQL */ `
     getCalendarEntry(id: $id) {
       id
       creator
+      calendar
       start
       end
       title
@@ -23,6 +24,7 @@ export const listCalendarEntrys = /* GraphQL */ `
       items {
         id
         creator
+        calendar
         start
         end
         title

@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# production
+build
+
+# misc
+
+#amplify
+amplify
+dist
+aws-exports.js
+awsconfiguration.json
+amplifyconfiguration.json
+amplify-gradle-config.json
+amplifyxc.config

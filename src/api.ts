@@ -5,14 +5,20 @@
 export type CreateCalendarEntryInput = {
   id?: string | null,
   creator: string,
+  calendar: Calendar,
   start: string,
   end: string,
   title: string,
   description?: string | null,
 };
 
+export enum Calendar {
+  COMMON_ROOM = "COMMON_ROOM",
+}
+
+
 export type ModelCalendarEntryConditionInput = {
-  creator?: ModelIDInput | null,
+  calendar?: ModelCalendarInput | null,
   start?: ModelStringInput | null,
   end?: ModelStringInput | null,
   title?: ModelStringInput | null,
@@ -22,7 +28,12 @@ export type ModelCalendarEntryConditionInput = {
   not?: ModelCalendarEntryConditionInput | null,
 };
 
-export type ModelIDInput = {
+export type ModelCalendarInput = {
+  eq?: Calendar | null,
+  ne?: Calendar | null,
+};
+
+export type ModelStringInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -62,7 +73,34 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type ModelStringInput = {
+export type UpdateCalendarEntryInput = {
+  id: string,
+  creator?: string | null,
+  calendar?: Calendar | null,
+  start?: string | null,
+  end?: string | null,
+  title?: string | null,
+  description?: string | null,
+};
+
+export type DeleteCalendarEntryInput = {
+  id?: string | null,
+};
+
+export type ModelCalendarEntryFilterInput = {
+  id?: ModelIDInput | null,
+  creator?: ModelIDInput | null,
+  calendar?: ModelCalendarInput | null,
+  start?: ModelStringInput | null,
+  end?: ModelStringInput | null,
+  title?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  and?: Array< ModelCalendarEntryFilterInput | null > | null,
+  or?: Array< ModelCalendarEntryFilterInput | null > | null,
+  not?: ModelCalendarEntryFilterInput | null,
+};
+
+export type ModelIDInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -78,31 +116,6 @@ export type ModelStringInput = {
   size?: ModelSizeInput | null,
 };
 
-export type UpdateCalendarEntryInput = {
-  id: string,
-  creator?: string | null,
-  start?: string | null,
-  end?: string | null,
-  title?: string | null,
-  description?: string | null,
-};
-
-export type DeleteCalendarEntryInput = {
-  id?: string | null,
-};
-
-export type ModelCalendarEntryFilterInput = {
-  id?: ModelIDInput | null,
-  creator?: ModelIDInput | null,
-  start?: ModelStringInput | null,
-  end?: ModelStringInput | null,
-  title?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelCalendarEntryFilterInput | null > | null,
-  or?: Array< ModelCalendarEntryFilterInput | null > | null,
-  not?: ModelCalendarEntryFilterInput | null,
-};
-
 export type CreateCalendarEntryMutationVariables = {
   input: CreateCalendarEntryInput,
   condition?: ModelCalendarEntryConditionInput | null,
@@ -113,6 +126,7 @@ export type CreateCalendarEntryMutation = {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
@@ -130,6 +144,7 @@ export type UpdateCalendarEntryMutation = {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
@@ -147,6 +162,7 @@ export type DeleteCalendarEntryMutation = {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
@@ -163,6 +179,7 @@ export type GetCalendarEntryQuery = {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
@@ -183,6 +200,7 @@ export type ListCalendarEntrysQuery = {
       __typename: "CalendarEntry",
       id: string,
       creator: string,
+      calendar: Calendar,
       start: string,
       end: string,
       title: string,
@@ -192,16 +210,25 @@ export type ListCalendarEntrysQuery = {
   } | null,
 };
 
+export type OnCreateCalendarEntrySubscriptionVariables = {
+  creator: string,
+};
+
 export type OnCreateCalendarEntrySubscription = {
   onCreateCalendarEntry:  {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
     description: string | null,
   } | null,
+};
+
+export type OnUpdateCalendarEntrySubscriptionVariables = {
+  creator: string,
 };
 
 export type OnUpdateCalendarEntrySubscription = {
@@ -209,6 +236,7 @@ export type OnUpdateCalendarEntrySubscription = {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,
@@ -216,11 +244,16 @@ export type OnUpdateCalendarEntrySubscription = {
   } | null,
 };
 
+export type OnDeleteCalendarEntrySubscriptionVariables = {
+  creator: string,
+};
+
 export type OnDeleteCalendarEntrySubscription = {
   onDeleteCalendarEntry:  {
     __typename: "CalendarEntry",
     id: string,
     creator: string,
+    calendar: Calendar,
     start: string,
     end: string,
     title: string,

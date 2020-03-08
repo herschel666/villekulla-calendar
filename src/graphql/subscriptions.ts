@@ -2,10 +2,11 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateCalendarEntry = /* GraphQL */ `
-  subscription OnCreateCalendarEntry {
-    onCreateCalendarEntry {
+  subscription OnCreateCalendarEntry($creator: String!) {
+    onCreateCalendarEntry(creator: $creator) {
       id
       creator
+      calendar
       start
       end
       title
@@ -14,10 +15,11 @@ export const onCreateCalendarEntry = /* GraphQL */ `
   }
 `;
 export const onUpdateCalendarEntry = /* GraphQL */ `
-  subscription OnUpdateCalendarEntry {
-    onUpdateCalendarEntry {
+  subscription OnUpdateCalendarEntry($creator: String!) {
+    onUpdateCalendarEntry(creator: $creator) {
       id
       creator
+      calendar
       start
       end
       title
@@ -26,10 +28,11 @@ export const onUpdateCalendarEntry = /* GraphQL */ `
   }
 `;
 export const onDeleteCalendarEntry = /* GraphQL */ `
-  subscription OnDeleteCalendarEntry {
-    onDeleteCalendarEntry {
+  subscription OnDeleteCalendarEntry($creator: String!) {
+    onDeleteCalendarEntry(creator: $creator) {
       id
       creator
+      calendar
       start
       end
       title
