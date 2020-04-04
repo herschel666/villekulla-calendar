@@ -4,7 +4,6 @@ import React, { FunctionComponent } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import format from 'date-fns/format';
 import { render, fireEvent, wait as waitFor } from '@testing-library/react';
-import 'mock-local-storage';
 
 jest.mock('react-router-dom', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
