@@ -20,7 +20,7 @@ jest.mock('react-router-dom', () => {
   return { ...mod, BrowserRouter };
 });
 jest.mock('../../../hooks/use-user', () => ({
-  useUser: () => 'test',
+  useUser: () => ({ username: 'test' }),
 }));
 jest.mock('aws-amplify', () => {
   const { graphqlOperation } = jest.requireActual('aws-amplify');

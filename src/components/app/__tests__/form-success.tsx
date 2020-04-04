@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => {
   return { ...mod, BrowserRouter };
 });
 jest.mock('../../../hooks/use-user', () => ({
-  useUser: () => 'test',
+  useUser: () => ({ username: 'test' }),
 }));
 jest.mock('aws-amplify', () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
