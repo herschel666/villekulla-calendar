@@ -5,7 +5,6 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 import format from 'date-fns/format';
 import { render, wait } from '@testing-library/react';
-import 'mock-local-storage';
 
 jest.mock('react-router-dom', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
