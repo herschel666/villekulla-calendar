@@ -4,6 +4,7 @@ import format from 'date-fns/format';
 
 import { Calendar } from '../calendar';
 import { CreateEventForm } from '../create-event-form';
+import { EventDetail } from '../event-detail';
 
 export const App = () => (
   <BrowserRouter>
@@ -22,6 +23,12 @@ export const App = () => (
         exact={true}
         strict={true}
         component={CreateEventForm}
+      />
+      <Route
+        path="/detail/:eventId/"
+        exact={true}
+        strict={true}
+        component={EventDetail}
       />
       <Route path="*" render={() => <h1>Not found</h1>} />
     </Switch>

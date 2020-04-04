@@ -4,6 +4,7 @@ import { API, graphqlOperation as gql } from 'aws-amplify';
 import FullCalendar from '@fullcalendar/react';
 import View from '@fullcalendar/core/View';
 import { EventInput } from '@fullcalendar/core/structs/event';
+import { EventApi } from '@fullcalendar/core/api/EventApi';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import format from 'date-fns/format';
@@ -73,6 +74,8 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
     const dateString = format(new Date(args.date), 'yyyy-MM-dd');
     history.push(`/calendar/new/?date=${dateString}`);
   };
+  const handleEventClick = ({ event }: { event: EventApi }) =>
+    history.push(`/detail/${event.id}/`);
   const loadEntries = React.useCallback(async () => {
     const { data } = await API.graphql(
       gql(ListCalendarEntrys, {
@@ -82,7 +85,8 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
 
     setEntries(
       data.listCalendarEntrys.items.map(
-        ({ title, start, end }: EventInput): EventInput => ({
+        ({ id, title, start, end }: EventInput): EventInput => ({
+          id,
           title,
           start,
           end,
@@ -105,7 +109,7 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
         ref={calendarComponentRef}
         locale={deLocale}
         dateClick={handleDateClick}
-        eventClick={console.log}
+        eventClick={handleEventClick}
         defaultView={VIEW_TYPE}
         plugins={[dayGridPlugin, interactionPlugin]}
         customButtons={customButtons}
