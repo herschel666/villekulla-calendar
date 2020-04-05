@@ -104,7 +104,7 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   }, [loadEntries, defaultDate]);
 
   return (
-    <div>
+    <div data-testid="calendar">
       <FullCalendar
         ref={calendarComponentRef}
         locale={deLocale}

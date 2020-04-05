@@ -3,7 +3,7 @@
 import React, { FunctionComponent } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import format from 'date-fns/format';
-import { render, fireEvent, wait as waitFor } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 
 jest.mock('react-router-dom', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -55,16 +55,17 @@ it('should be possible to create an event', async () => {
   const evnt = (value: string) => ({ target: { value } });
   const date = new Date();
   const month = format(date, 'yyyy-MM');
-  const app = await render(
+  const app = render(
     <MemoryRouter initialEntries={[`/calendar/new/?date=${month}-28`]}>
       <App />
     </MemoryRouter>
   );
+  await app.findByText('Termin anlegen…');
 
-  const title = await app.getByLabelText('Titel');
-  const startTime = await app.getByLabelText('Uhrzeit (Start)');
-  const endTime = await app.getByLabelText('Uhrzeit (Ende)');
-  const description = await app.getByLabelText('Beschreibung');
+  const title = app.getByLabelText('Titel');
+  const startTime = app.getByLabelText('Uhrzeit (Start)');
+  const endTime = app.getByLabelText('Uhrzeit (Ende)');
+  const description = app.getByLabelText('Beschreibung');
   const form = app.container.querySelector('form')!;
 
   fireEvent.change(title, evnt(eventTitle));
@@ -73,5 +74,5 @@ it('should be possible to create an event', async () => {
   fireEvent.change(description, evnt('This will be fun!'));
   fireEvent.submit(form);
 
-  await waitFor(() => app.getByText(eventTitle));
+  await app.findByText(eventTitle);
 });

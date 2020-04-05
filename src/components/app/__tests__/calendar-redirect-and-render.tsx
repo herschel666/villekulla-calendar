@@ -4,7 +4,7 @@ import React, { FunctionComponent } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 import format from 'date-fns/format';
-import { render, wait } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 jest.mock('react-router-dom', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -42,10 +42,8 @@ it('should render the app & redirects to the current month view', async () => {
       />
     </MemoryRouter>
   );
-  await wait();
   const date = new Date();
 
-  expect(app.findByText(format(date, 'MMMM yyyy'))).resolves.toBeTruthy();
-  expect(location).toBeDefined();
+  await app.findByTestId('calendar');
   expect(location!.pathname).toBe(`/calendar/${format(date, 'yyyy-MM')}/`);
 });

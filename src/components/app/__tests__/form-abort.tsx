@@ -4,12 +4,7 @@ import React, { FunctionComponent } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 import format from 'date-fns/format';
-import {
-  render,
-  fireEvent,
-  act,
-  waitForDomChange,
-} from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 
 jest.mock('react-router-dom', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -52,10 +47,9 @@ it('should be possible to abort', async () => {
 
   const abort = await app.findByText('Abbrechen');
   fireEvent.click(abort);
-  await act(async () => {
-    await waitForDomChange();
-  });
+  await waitFor(() => void 0);
 
   expect(location).toBeDefined();
   expect(location!.pathname).toBe(`/calendar/${month}/`);
+  expect(app.queryByText('Abbrechen')).toBe(null);
 });
