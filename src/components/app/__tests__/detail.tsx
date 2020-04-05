@@ -17,11 +17,11 @@ jest.mock('react-router-dom', () => {
     createElement(Fragment, void 0, Children.only(children));
   return { ...mod, BrowserRouter };
 });
-jest.mock('aws-amplify', () => {
+jest.mock('@aws-amplify/api', () => {
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth();
-  const { graphqlOperation } = jest.requireActual('aws-amplify');
+  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const item = {
     id: '1',
     title: 'My awesome event!',

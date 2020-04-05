@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { API, graphqlOperation as gql } from 'aws-amplify';
+import { API, graphqlOperation as gql, GraphQLResult } from '@aws-amplify/api';
 import format from 'date-fns/format';
 
 import { GetCalendarEntryQuery } from '../../api';
@@ -55,10 +55,10 @@ export const EventDetail: React.SFC<Props> = ({ match, history }) => {
   });
   const [deleting, setDeleting] = React.useState<boolean>(false);
   const loadEvent = React.useCallback(async () => {
-    const { data }: { data: GetCalendarEntryQuery } = await API.graphql(
+    const { data } = (await API.graphql(
       gql(GetCalendarEntry, { id: match.params.eventId })
-    );
-    setEvent(data);
+    )) as GraphQLResult<GetCalendarEntryQuery>;
+    setEvent(data || { getCalendarEntry: null });
   }, [match.params.eventId]);
   const handleDelete = async () => {
     if (
@@ -69,7 +69,7 @@ export const EventDetail: React.SFC<Props> = ({ match, history }) => {
       const startDate = new Date(event.getCalendarEntry.start);
       try {
         await API.graphql(
-          gql(deleteCalendarEntry, { input: { id: match.params.eventId + 1 } })
+          gql(deleteCalendarEntry, { input: { id: match.params.eventId } })
         );
         history.push(`/calendar/${format(startDate, 'yyyy-MM')}/`);
       } catch (err) {

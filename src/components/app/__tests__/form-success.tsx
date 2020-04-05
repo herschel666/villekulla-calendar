@@ -16,10 +16,10 @@ jest.mock('react-router-dom', () => {
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
-jest.mock('aws-amplify', () => {
+jest.mock('@aws-amplify/api', () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const formatISO = require('date-fns/formatISO');
-  const { graphqlOperation } = jest.requireActual('aws-amplify');
+  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const mockDate = new Date();
   const eventStartDate = new Date(mockDate);
   const eventEndDate = new Date(mockDate);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Amplify, { I18n } from 'aws-amplify';
+import Amplify, { I18n } from '@aws-amplify/core';
 import { withAuthenticator } from 'aws-amplify-react';
 
 import config from './aws-exports';

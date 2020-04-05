@@ -1,5 +1,5 @@
 import React from 'react';
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 
 export const useUser = (): { username: string } | null => {
   const [user, setUser] = React.useState(null);

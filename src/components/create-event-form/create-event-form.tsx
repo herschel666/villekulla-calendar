@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import { API, graphqlOperation as gql } from 'aws-amplify';
+import { API, graphqlOperation as gql } from '@aws-amplify/api';
 import format from 'date-fns/format';
 import formatISO from 'date-fns/formatISO';
 import roundToNearestMinutes from 'date-fns/roundToNearestMinutes';
