@@ -17,8 +17,8 @@ jest.mock('react-router-dom', () => {
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
-jest.mock('aws-amplify', () => {
-  const { graphqlOperation } = jest.requireActual('aws-amplify');
+jest.mock('@aws-amplify/api', () => {
+  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const graphql = jest
     .fn()
     .mockResolvedValue({ data: { listCalendarEntrys: { items: [] } } });

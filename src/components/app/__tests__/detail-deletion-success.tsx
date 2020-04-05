@@ -17,8 +17,8 @@ jest.mock('react-router-dom', () => {
     createElement(Fragment, void 0, Children.only(children));
   return { ...mod, BrowserRouter };
 });
-jest.mock('aws-amplify', () => {
-  const { graphqlOperation } = jest.requireActual('aws-amplify');
+jest.mock('@aws-amplify/api', () => {
+  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const item = {
     id: '1',
     title: 'My awesome event!',

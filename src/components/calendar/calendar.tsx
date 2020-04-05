@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { API, graphqlOperation as gql } from 'aws-amplify';
+import { API, graphqlOperation as gql, GraphQLResult } from '@aws-amplify/api';
 import FullCalendar from '@fullcalendar/react';
 import View from '@fullcalendar/core/View';
 import { EventInput } from '@fullcalendar/core/structs/event';
@@ -12,6 +12,7 @@ import sub from 'date-fns/sub';
 import add from 'date-fns/add';
 
 import { listCalendarEntrys as ListCalendarEntrys } from '../../graphql/queries';
+import { ListCalendarEntrysQuery } from '../../api';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const deLocale = require('@fullcalendar/core/locales/de');
@@ -77,23 +78,27 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   const handleEventClick = ({ event }: { event: EventApi }) =>
     history.push(`/detail/${event.id}/`);
   const loadEntries = React.useCallback(async () => {
-    const { data } = await API.graphql(
+    const { data } = (await API.graphql(
       gql(ListCalendarEntrys, {
         filter: { start: { beginsWith: currentMonth } },
       })
-    );
+    )) as GraphQLResult<ListCalendarEntrysQuery>;
 
-    setEntries(
-      data.listCalendarEntrys.items.map(
-        ({ id, title, start, end }: EventInput): EventInput => ({
-          id,
-          title,
-          start,
-          end,
-          allDay: false,
-        })
-      )
-    );
+    if (data && data.listCalendarEntrys && data.listCalendarEntrys.items) {
+      setEntries(
+        data.listCalendarEntrys.items.filter(Boolean).map(
+          (entry): EventInput => ({
+            /* eslint-disable @typescript-eslint/no-non-null-assertion */
+            id: entry!.id,
+            title: entry!.title,
+            start: entry!.start,
+            end: entry!.end,
+            /* eslint-enable @typescript-eslint/no-non-null-assertion */
+            allDay: false,
+          })
+        )
+      );
+    }
   }, [currentMonth]);
 
   React.useEffect(() => {
