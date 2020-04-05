@@ -2,7 +2,7 @@
 
 import React, { FunctionComponent } from 'react';
 import format from 'date-fns/format';
-import { render, fireEvent, act, wait } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 
@@ -44,7 +44,7 @@ it('deletes the entry', async () => {
   let location: RouteProps['location'] | undefined;
   const date = new Date();
   const month = format(date, 'yyyy-MM');
-  const app = await render(
+  const app = render(
     <MemoryRouter initialEntries={['/detail/1/']}>
       <App />
       <Route
@@ -56,11 +56,9 @@ it('deletes the entry', async () => {
       />
     </MemoryRouter>
   );
-  await wait();
-  const btn = await app.getByText('Termin löschen');
+  const btn = await app.findByText('Termin löschen');
 
-  act(() => void fireEvent.click(btn));
-  await wait();
-
+  fireEvent.click(btn);
+  await app.findByText('Heute');
   expect(location!.pathname).toBe(`/calendar/${month}/`);
 });

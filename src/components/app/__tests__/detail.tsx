@@ -2,7 +2,7 @@
 
 import React, { FunctionComponent } from 'react';
 import format from 'date-fns/format';
-import { render, fireEvent, act, wait } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 
@@ -23,7 +23,7 @@ jest.mock('aws-amplify', () => {
   const month = date.getMonth();
   const { graphqlOperation } = jest.requireActual('aws-amplify');
   const item = {
-    id: 'a2278981-b0cf-4d5e-9cec-07bd7272eadb',
+    id: '1',
     title: 'My awesome event!',
     start: new Date(year, month, 18, 5, 30),
     end: new Date(year, month, 18, 8, 0),
@@ -42,9 +42,10 @@ it('displays the event details', async () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const { App } = require('..');
   let location: RouteProps['location'] | undefined;
+  const title = 'My awesome event!';
   const date = new Date();
   const month = format(date, 'yyyy-MM');
-  const app = await render(
+  const app = render(
     <MemoryRouter initialEntries={[`/calendar/${month}/`]}>
       <App />
       <Route
@@ -56,20 +57,15 @@ it('displays the event details', async () => {
       />
     </MemoryRouter>
   );
-  await wait();
-  const entry = await app.getByText('My awesome event!');
+  const entry = await app.findByText(title);
+  fireEvent.click(entry!);
 
-  act(() => void fireEvent.click(entry));
-  await wait();
-
-  expect(location!.pathname).toBe(
-    '/detail/a2278981-b0cf-4d5e-9cec-07bd7272eadb/'
-  );
-  app.getByText('My awesome event!');
-  app.getByText(
+  expect(location!.pathname).toBe('/detail/1/');
+  await app.findByText('My awesome event!', { selector: 'h2' });
+  await app.findByText(
     format(new Date(date.getFullYear(), date.getMonth(), 18), 'dd.MM.yyyy')
   );
-  app.getByText(/05:30 Uhr bis 08:00 Uhr/);
-  app.getByText('Lorem ipsum dolor.');
+  await app.findByText(/05:30 Uhr bis 08:00 Uhr/);
+  await app.findByText('Lorem ipsum dolor.');
   expect(await app.queryByText('Termin löschen')).toBe(null);
 });

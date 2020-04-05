@@ -1,8 +1,9 @@
 /* eslint @typescript-eslint/no-non-null-assertion: "off" */
 
 import React, { FunctionComponent } from 'react';
-import { render, fireEvent, act, wait } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import wait from 'waait';
 
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
@@ -49,16 +50,14 @@ afterAll(() => {
 it('logs the deletion error', async () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const { App } = require('..');
-  const app = await render(
+  const app = render(
     <MemoryRouter initialEntries={['/detail/1/']}>
       <App />
     </MemoryRouter>
   );
-  await wait();
-  await wait();
-  const btn = await app.getByText('Termin löschen');
+  const btn = await app.findByText('Termin löschen');
 
-  act(() => void fireEvent.click(btn));
+  fireEvent.click(btn);
   await wait();
 
   expect(console.error).toHaveBeenCalled();
