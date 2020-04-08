@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-amplify/analytics": "3.1.4",
     "@aws-amplify/api": "3.1.4",
-    "@aws-amplify/auth": "3.2.1",
+    "@aws-amplify/auth": "3.2.3",
     "@aws-amplify/core": "3.2.1",
     "@aws-amplify/interactions": "3.1.4",
     "@aws-amplify/pubsub": "3.0.5",
