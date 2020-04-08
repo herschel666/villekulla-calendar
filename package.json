@@ -29,7 +29,7 @@
     "@aws-amplify/core": "3.2.1",
     "@aws-amplify/interactions": "3.1.4",
     "@aws-amplify/pubsub": "3.0.5",
-    "@aws-amplify/storage": "3.1.4",
+    "@aws-amplify/storage": "3.1.6",
     "@aws-amplify/ui": "2.0.2",
     "@aws-amplify/xr": "2.1.4",
     "@fullcalendar/core": "4.4.0",
