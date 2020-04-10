@@ -23,7 +23,7 @@ interface State {
   loading: boolean;
 }
 
-type Reducer = FormState & State;
+export type Reducer = FormState & State;
 
 interface StartRequest {
   type: 'START_REQUEST';
@@ -73,7 +73,7 @@ export const dateTimeAction = (
   payload: { field, value },
 });
 
-type Action = StartRequest | EndRequest | FormAction | DateTimeAction;
+export type Action = StartRequest | EndRequest | FormAction | DateTimeAction;
 
 export const getInitialState = (date: Date): Reducer => ({
   title: '',
@@ -102,29 +102,26 @@ export const reducer = (state: Reducer, action: Action): Reducer => {
       return { ...state, [action.payload.field]: action.payload.value };
     }
     case DATE_TIME_ACTION: {
-      const { field } = action.payload;
+      const { field, value } = action.payload;
       let { startTime, endTime } = state;
-      let { value } = action.payload;
 
       if (
         field === 'startTime' &&
-        (isAfter(startTime, endTime) || isEqual(startTime, endTime))
+        (isAfter(value, endTime) || isEqual(value, endTime))
       ) {
-        endTime = add(startTime, { hours: 1 });
+        endTime = add(value, { hours: 1 });
       }
-      if (field === 'endTime' && isBefore(endTime, startTime)) {
-        startTime = sub(startTime, { hours: 1 });
+      if (
+        field === 'endTime' &&
+        (isBefore(value, startTime) || isEqual(value, startTime))
+      ) {
+        startTime = sub(value, { hours: 1 });
       }
       if (field === 'date') {
-        if (
-          !isSameDay(action.payload.value, startTime) ||
-          !isSameDay(action.payload.value, endTime)
-        ) {
-          startTime = mergeTimeAndDate(value, startTime);
-          endTime = mergeTimeAndDate(value, endTime);
+        if (!isSameDay(value, startTime) || !isSameDay(value, endTime)) {
+          startTime = mergeTimeAndDate(new Date(value), startTime);
+          endTime = mergeTimeAndDate(new Date(value), endTime);
         }
-      } else {
-        value = mergeTimeAndDate(state.date, value);
       }
 
       return {
