@@ -16,6 +16,12 @@ jest.mock('react-router-dom', () => {
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
+jest.mock('../../../hooks/use-client-id', () => {
+  let i = 0;
+  return {
+    useClientId: () => `i${++i}`,
+  };
+});
 jest.mock('@aws-amplify/api', () => {
   const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const graphql = jest.fn().mockResolvedValueOnce({});
