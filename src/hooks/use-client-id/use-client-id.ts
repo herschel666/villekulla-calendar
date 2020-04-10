@@ -1,5 +1,5 @@
 import React from 'react';
-import { nanoid } from 'nanoid';
+import uuid from 'uuid';
 
 const LS_KEY = 'villekulla-calendar:client-id';
 
@@ -10,7 +10,7 @@ export const useClientId = (): string | null => {
     let storedClientId = localStorage.getItem(LS_KEY);
 
     if (!storedClientId) {
-      storedClientId = nanoid();
+      storedClientId = uuid.v4();
       localStorage.setItem(LS_KEY, storedClientId);
     }
 
