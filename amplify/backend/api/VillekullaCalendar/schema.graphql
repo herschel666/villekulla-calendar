@@ -11,6 +11,7 @@ type CalendarEntry
     ]
   ) {
   id: ID!
+  clientId: ID!
   creator: ID!
   calendar: Calendar!
   start: AWSDateTime!
