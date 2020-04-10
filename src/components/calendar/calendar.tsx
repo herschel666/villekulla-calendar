@@ -1,9 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { API, graphqlOperation as gql, GraphQLResult } from '@aws-amplify/api';
 import FullCalendar from '@fullcalendar/react';
 import View from '@fullcalendar/core/View';
-import { EventInput } from '@fullcalendar/core/structs/event';
 import { EventApi } from '@fullcalendar/core/api/EventApi';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -11,8 +9,7 @@ import format from 'date-fns/format';
 import sub from 'date-fns/sub';
 import add from 'date-fns/add';
 
-import { listCalendarEntrys as ListCalendarEntrys } from '../../graphql/queries';
-import { ListCalendarEntrysQuery } from '../../api';
+import { useCalendarEntries } from '../../hooks/use-calendar-entries/';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const deLocale = require('@fullcalendar/core/locales/de');
@@ -69,7 +66,7 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
     right: 'navigationToday navigationPrev navigationNext',
   };
   const calendarComponentRef = React.useRef<FullCalendar | null>(null);
-  const [entries, setEntries] = React.useState<Array<unknown>>([]);
+  const entries = useCalendarEntries(currentMonth);
 
   const handleDateClick = (args: DateClickArgs) => {
     const dateString = format(new Date(args.date), 'yyyy-MM-dd');
@@ -77,36 +74,12 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
   };
   const handleEventClick = ({ event }: { event: EventApi }) =>
     history.push(`/detail/${event.id}/`);
-  const loadEntries = React.useCallback(async () => {
-    const { data } = (await API.graphql(
-      gql(ListCalendarEntrys, {
-        filter: { start: { beginsWith: currentMonth } },
-      })
-    )) as GraphQLResult<ListCalendarEntrysQuery>;
-
-    if (data && data.listCalendarEntrys && data.listCalendarEntrys.items) {
-      setEntries(
-        data.listCalendarEntrys.items.filter(Boolean).map(
-          (entry): EventInput => ({
-            /* eslint-disable @typescript-eslint/no-non-null-assertion */
-            id: entry!.id,
-            title: entry!.title,
-            start: entry!.start,
-            end: entry!.end,
-            /* eslint-enable @typescript-eslint/no-non-null-assertion */
-            allDay: false,
-          })
-        )
-      );
-    }
-  }, [currentMonth]);
 
   React.useEffect(() => {
-    loadEntries();
     if (calendarComponentRef.current) {
       calendarComponentRef.current.getApi().changeView(VIEW_TYPE, defaultDate);
     }
-  }, [loadEntries, defaultDate]);
+  }, [defaultDate]);
 
   return (
     <div data-testid="calendar">
