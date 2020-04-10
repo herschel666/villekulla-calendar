@@ -32,10 +32,27 @@ jest.mock('@aws-amplify/api', () => {
   };
   const graphql = jest
     .fn()
-    .mockResolvedValueOnce({ data: { listCalendarEntrys: { items: [item] } } })
     .mockResolvedValueOnce({ data: { getCalendarEntry: item } });
   const API = { graphql };
   return { graphqlOperation, API };
+});
+jest.mock('../../../hooks/use-calendar-entries', () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  return {
+    useCalendarEntries: () => [
+      {
+        id: '1',
+        title: 'My awesome event!',
+        start: new Date(year, month, 18, 5, 30),
+        end: new Date(year, month, 18, 8, 0),
+        description: 'Lorem ipsum dolor.',
+        creator: 'horst',
+      },
+    ],
+  };
 });
 
 it('displays the event details', async () => {
