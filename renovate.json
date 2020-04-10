@@ -1,12 +1,14 @@
 {
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["config:base"],
   "packageRules": [
     {
       "depTypeList": ["devDependencies"],
       "updateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "packagePatterns": "^@aws-amplify",
+      "groupName": ["@aws-amplify packages"]
     }
   ]
 }
