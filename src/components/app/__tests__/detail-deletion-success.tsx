@@ -30,10 +30,12 @@ jest.mock('@aws-amplify/api', () => {
   const graphql = jest
     .fn()
     .mockResolvedValueOnce({ data: { getCalendarEntry: item } })
-    .mockResolvedValueOnce({ data: {} })
-    .mockResolvedValue({ data: { listCalendarEntrys: { items: [] } } });
+    .mockResolvedValueOnce({ data: {} });
   const API = { graphql };
   return { graphqlOperation, API };
+});
+jest.mock('../../../hooks/use-calendar-entries', () => {
+  return { useCalendarEntries: () => [] };
 });
 
 window.confirm = () => true;

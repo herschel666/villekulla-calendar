@@ -17,13 +17,8 @@ jest.mock('react-router-dom', () => {
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
-jest.mock('@aws-amplify/api', () => {
-  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
-  const graphql = jest
-    .fn()
-    .mockResolvedValue({ data: { listCalendarEntrys: { items: [] } } });
-  const API = { graphql };
-  return { graphqlOperation, API };
+jest.mock('../../../hooks/use-calendar-entries', () => {
+  return { useCalendarEntries: () => [] };
 });
 
 it('should render the app & redirects to the current month view', async () => {
