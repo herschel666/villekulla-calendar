@@ -119,8 +119,8 @@ export const reducer = (state: Reducer, action: Action): Reducer => {
       }
       if (field === 'date') {
         if (!isSameDay(value, startTime) || !isSameDay(value, endTime)) {
-          startTime = mergeTimeAndDate(new Date(value), startTime);
-          endTime = mergeTimeAndDate(new Date(value), endTime);
+          startTime = mergeTimeAndDate(value, startTime);
+          endTime = mergeTimeAndDate(value, endTime);
         }
       }
 
