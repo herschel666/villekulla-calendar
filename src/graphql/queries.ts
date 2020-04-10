@@ -6,6 +6,7 @@ export const getCalendarEntry = /* GraphQL */ `
   query GetCalendarEntry($id: ID!) {
     getCalendarEntry(id: $id) {
       id
+      clientId
       creator
       calendar
       start
@@ -24,6 +25,7 @@ export const listCalendarEntrys = /* GraphQL */ `
     listCalendarEntrys(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        clientId
         creator
         calendar
         start
