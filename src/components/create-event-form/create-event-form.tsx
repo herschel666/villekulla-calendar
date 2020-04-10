@@ -12,6 +12,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { createCalendarEntry as CreateCalendarEntry } from '../../graphql/mutations';
 import { useUser } from '../../hooks/use-user';
+import { useClientId } from '../../hooks/use-client-id/';
 import {
   reducer,
   startRequest,
@@ -39,6 +40,7 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
   const user = useUser();
   const query = new URLSearchParams(search);
   const initialDate = getinitialDate(query.get('date'));
+  const clientId = useClientId();
   const [state, dispatch] = React.useReducer<typeof reducer>(
     reducer,
     getInitialState(initialDate)
@@ -52,12 +54,13 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
     evnt.preventDefault();
     const { title, startTime, endTime, description } = state;
 
-    if (!user || !title || !startTime || !endTime) {
+    if (!clientId || !user || !title || !startTime || !endTime) {
       return;
     }
 
     dispatch(startRequest());
     const input = {
+      clientId,
       creator: user.username,
       calendar: 'COMMON_ROOM',
       title: title,
