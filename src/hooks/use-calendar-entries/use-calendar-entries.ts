@@ -1,20 +1,33 @@
 import React from 'react';
 import { API, graphqlOperation as gql, GraphQLResult } from '@aws-amplify/api';
 import { EventInput } from '@fullcalendar/core/structs/event';
+import { Observable, ZenObservable } from 'zen-observable-ts';
 
 import { listCalendarEntrys as ListCalendarEntrys } from '../../graphql/queries';
-import { ListCalendarEntrysQuery } from '../../api';
+import { onCreateCalendarEntry } from '../../graphql/subscriptions';
+import {
+  ListCalendarEntrysQuery,
+  OnCreateCalendarEntrySubscription,
+} from '../../api';
+import { useClientId } from '../use-client-id/';
 
 type Entries = Array<unknown>;
 
 // TODO: add error handling
 export const useCalendarEntries = (month: string): Entries => {
+  const clientId = useClientId();
   const [entries, setEntries] = React.useState<Entries>([]);
 
   React.useEffect(() => {
     const query = gql(ListCalendarEntrys, {
       filter: { start: { beginsWith: month } },
     });
+    const subscription = API.graphql(gql(onCreateCalendarEntry)) as Observable<{
+      value: GraphQLResult<OnCreateCalendarEntrySubscription>;
+    }>;
+    let subscriber = ({
+      unsubscribe: () => undefined,
+    } as unknown) as ZenObservable.Subscription;
 
     (API.graphql(query) as Promise<
       GraphQLResult<ListCalendarEntrysQuery>
@@ -35,7 +48,22 @@ export const useCalendarEntries = (month: string): Entries => {
         );
       }
     });
-  }, [month]);
+
+    // TODO: enable this in development, when WebSockets are supported by the API mock
+    if (process.env.NODE_ENV === 'production') {
+      subscriber = subscription.subscribe({
+        next: (eventData) => {
+          const event = eventData.value.data?.onCreateCalendarEntry;
+          if (!clientId || !event || clientId === event.clientId) {
+            return;
+          }
+          console.log('new event', event);
+        },
+      });
+    }
+
+    return () => subscriber.unsubscribe();
+  }, [month, clientId]);
 
   return entries;
 };
