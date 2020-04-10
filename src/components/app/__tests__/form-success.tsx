@@ -17,35 +17,28 @@ jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
 jest.mock('@aws-amplify/api', () => {
+  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
+  const graphql = jest.fn().mockResolvedValueOnce({});
+  const API = { graphql };
+  return { graphqlOperation, API };
+});
+jest.mock('../../../hooks/use-calendar-entries', () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const formatISO = require('date-fns/formatISO');
-  const { graphqlOperation } = jest.requireActual('@aws-amplify/api');
   const mockDate = new Date();
   const eventStartDate = new Date(mockDate);
   const eventEndDate = new Date(mockDate);
-  eventStartDate.setHours(11);
-  eventStartDate.setMinutes(0);
-  eventEndDate.setHours(13);
-  eventEndDate.setMinutes(30);
-  const graphql = jest
-    .fn()
-    .mockResolvedValueOnce({})
-    .mockResolvedValueOnce({
-      data: {
-        listCalendarEntrys: {
-          items: [
-            {
-              title: 'My nice event',
-              start: formatISO(eventStartDate),
-              end: formatISO(eventEndDate),
-              description: 'This will be fun!',
-            },
-          ],
-        },
+
+  return {
+    useCalendarEntries: () => [
+      {
+        title: 'My nice event',
+        start: formatISO(eventStartDate),
+        end: formatISO(eventEndDate),
+        description: 'This will be fun!',
       },
-    });
-  const API = { graphql };
-  return { graphqlOperation, API };
+    ],
+  };
 });
 
 it('should be possible to create an event', async () => {
