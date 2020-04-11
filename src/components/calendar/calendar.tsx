@@ -29,11 +29,18 @@ interface Params {
   month: string;
 }
 
-type Props = RouteComponentProps<Params>;
+type Props = RouteComponentProps<Params> & {
+  inBackground: boolean;
+};
 
 const VIEW_TYPE = 'dayGridMonth';
 
-export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
+export const Calendar: React.FC<Props> = ({
+  match: { params },
+  history,
+  location,
+  inBackground,
+}) => {
   const currentMonth = Object.values(params).join('-');
   const defaultDate = currentMonth.concat('-01');
   const customButtons = {
@@ -66,14 +73,16 @@ export const Calendar: React.FC<Props> = ({ match: { params }, history }) => {
     right: 'navigationToday navigationPrev navigationNext',
   };
   const calendarComponentRef = React.useRef<FullCalendar | null>(null);
-  const entries = useCalendarEntries(currentMonth);
+  const entries = useCalendarEntries(currentMonth, inBackground);
 
   const handleDateClick = (args: DateClickArgs) => {
     const dateString = format(new Date(args.date), 'yyyy-MM-dd');
-    history.push(`/calendar/new/?date=${dateString}`);
+    history.push(`/calendar/new/?date=${dateString}`, {
+      eventCreation: location,
+    });
   };
   const handleEventClick = ({ event }: { event: EventApi }) =>
-    history.push(`/detail/${event.id}/`);
+    history.push(`/detail/${event.id}/`, { eventDetail: location });
 
   React.useEffect(() => {
     if (calendarComponentRef.current) {
