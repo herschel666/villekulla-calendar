@@ -2,7 +2,12 @@
 
 import React from 'react';
 import format from 'date-fns/format';
-import { render, fireEvent } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  findByText,
+  queryByText,
+} from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { RouteProps } from 'react-router';
 
@@ -51,12 +56,13 @@ it('displays the event details', async () => {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const { App } = require('..');
   let location: RouteProps['location'] | undefined;
+  const mount = document.createElement('div');
   const title = 'My awesome event!';
   const date = new Date();
   const month = format(date, 'yyyy-MM');
   const app = render(
     <MemoryRouter initialEntries={[`/calendar/${month}/`]}>
-      <App />
+      <App mount={mount} />
       <Route
         path="*"
         render={({ location: reactRouterLocation }) => {
@@ -64,17 +70,19 @@ it('displays the event details', async () => {
           return null;
         }}
       />
-    </MemoryRouter>
+    </MemoryRouter>,
+    { container: document.body.appendChild(mount) }
   );
   const entry = await app.findByText(title);
   fireEvent.click(entry!);
 
   expect(location!.pathname).toBe('/detail/1/');
-  await app.findByText('My awesome event!', { selector: 'h2' });
-  await app.findByText(
+  await findByText(document.body, 'My awesome event!', { selector: 'h2' });
+  await findByText(
+    document.body,
     format(new Date(date.getFullYear(), date.getMonth(), 18), 'dd.MM.yyyy')
   );
-  await app.findByText(/05:30 Uhr bis 08:00 Uhr/);
-  await app.findByText('Lorem ipsum dolor.');
-  expect(await app.queryByText('Termin löschen')).toBe(null);
+  await findByText(document.body, /05:30 Uhr bis 08:00 Uhr/);
+  await findByText(document.body, 'Lorem ipsum dolor.');
+  expect(await queryByText(document.body, 'Termin löschen')).toBe(null);
 });
