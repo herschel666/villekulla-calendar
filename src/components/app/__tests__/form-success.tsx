@@ -1,18 +1,10 @@
 /* eslint @typescript-eslint/no-non-null-assertion: "off" */
 
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import format from 'date-fns/format';
 import { render, fireEvent } from '@testing-library/react';
 
-jest.mock('react-router-dom', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createElement, Fragment, Children } = require('react');
-  const mod = jest.requireActual('react-router-dom');
-  const BrowserRouter: FunctionComponent = ({ children }) =>
-    createElement(Fragment, void 0, Children.only(children));
-  return { ...mod, BrowserRouter };
-});
 jest.mock('../../../hooks/use-user', () => ({
   useUser: () => ({ username: 'test' }),
 }));
