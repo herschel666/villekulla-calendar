@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useRouteMatch, useHistory, useLocation } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import View from '@fullcalendar/core/View';
 import { EventApi } from '@fullcalendar/core/api/EventApi';
@@ -29,18 +29,16 @@ interface Params {
   month: string;
 }
 
-type Props = RouteComponentProps<Params> & {
+interface Props {
   inBackground: boolean;
-};
+}
 
 const VIEW_TYPE = 'dayGridMonth';
 
-export const Calendar: React.FC<Props> = ({
-  match: { params },
-  history,
-  location,
-  inBackground,
-}) => {
+export const Calendar: React.FC<Props> = ({ inBackground }) => {
+  const { params } = useRouteMatch<Params>();
+  const history = useHistory();
+  const location = useLocation();
   const currentMonth = Object.values(params).join('-');
   const defaultDate = currentMonth.concat('-01');
   const customButtons = {
