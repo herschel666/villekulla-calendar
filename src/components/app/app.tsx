@@ -34,15 +34,9 @@ export const App: React.FC<Props> = ({ mount }) => {
           path="/calendar/:year([0-9]{4})-:month([0-9]{2})/"
           strict={true}
           exact={true}
-          render={({ history, location, match }) => (
-            <Calendar
-              history={history}
-              location={location}
-              match={match}
-              inBackground={Boolean(eventCreation) || Boolean(eventDetail)}
-            />
-          )}
-        />
+        >
+          <Calendar inBackground={Boolean(eventCreation || eventDetail)} />
+        </Route>
         <Route
           path="/calendar/new/"
           exact={true}
