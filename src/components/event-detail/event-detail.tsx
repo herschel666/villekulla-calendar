@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { API, graphqlOperation as gql, GraphQLResult } from '@aws-amplify/api';
 import format from 'date-fns/format';
 
@@ -8,9 +8,13 @@ import { getCalendarEntry as GetCalendarEntry } from '../../graphql/queries';
 import { useUser } from '../../hooks/use-user/';
 import { deleteCalendarEntry } from '../../graphql/mutations';
 
-type Props = RouteComponentProps<{ eventId: string }>;
+interface Props {
+  pathToLastView?: string;
+}
+
 type DetailViewProps = GetCalendarEntryQuery['getCalendarEntry'] & {
   currentUser?: string;
+  pathToLastView?: Props['pathToLastView'];
   deleting: boolean;
   onClickDelete: () => void;
 };
@@ -22,6 +26,7 @@ const DetailView: React.SFC<DetailViewProps> = ({
   description,
   creator,
   currentUser,
+  pathToLastView,
   onClickDelete,
 }) => {
   const startDate = new Date(start);
@@ -44,11 +49,15 @@ const DetailView: React.SFC<DetailViewProps> = ({
       </span>
       <br />
       {Boolean(description) && <p>{description}</p>}
+      <hr />
+      <Link to={pathToLastView || '/'}>zurück</Link>
     </div>
   );
 };
 
-export const EventDetail: React.SFC<Props> = ({ match, history }) => {
+export const EventDetail: React.SFC<Props> = ({ pathToLastView }) => {
+  const history = useHistory();
+  const match = useRouteMatch<{ eventId: string }>();
   const user = useUser();
   const [event, setEvent] = React.useState<GetCalendarEntryQuery>({
     getCalendarEntry: null,
@@ -87,6 +96,7 @@ export const EventDetail: React.SFC<Props> = ({ match, history }) => {
     <DetailView
       {...event.getCalendarEntry}
       currentUser={user?.username}
+      pathToLastView={pathToLastView}
       onClickDelete={handleDelete}
       deleting={deleting}
     />

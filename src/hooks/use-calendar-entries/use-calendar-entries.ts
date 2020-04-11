@@ -14,11 +14,18 @@ import { useClientId } from '../use-client-id/';
 type Entries = Array<unknown>;
 
 // TODO: add error handling
-export const useCalendarEntries = (month: string): Entries => {
+export const useCalendarEntries = (
+  month: string,
+  omitFetch: boolean
+): Entries => {
   const clientId = useClientId();
   const [entries, setEntries] = React.useState<Entries>([]);
 
   React.useEffect(() => {
+    if (omitFetch) {
+      return;
+    }
+
     const query = gql(ListCalendarEntrys, {
       filter: { start: { beginsWith: month } },
     });
@@ -69,7 +76,7 @@ export const useCalendarEntries = (month: string): Entries => {
       }
       subscriber.unsubscribe();
     };
-  }, [month, clientId]);
+  }, [month, clientId, omitFetch]);
 
   return entries;
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import { API, graphqlOperation as gql } from '@aws-amplify/api';
 import format from 'date-fns/format';
@@ -33,14 +33,17 @@ const getinitialDate = (dateString: string | null): Date => {
   return roundToNearestMinutes(isValidDate ? date : now, { nearestTo: 15 });
 };
 
-export const CreateEventForm: React.FC<RouteComponentProps> = ({
-  location: { search },
-  history,
-}) => {
+interface Props {
+  pathToLastView?: string;
+}
+
+export const CreateEventForm: React.FC<Props> = ({ pathToLastView }) => {
+  const { search } = useLocation();
+  const history = useHistory();
   const user = useUser();
+  const clientId = useClientId();
   const query = new URLSearchParams(search);
   const initialDate = getinitialDate(query.get('date'));
-  const clientId = useClientId();
   const [state, dispatch] = React.useReducer<typeof reducer>(
     reducer,
     getInitialState(initialDate)
@@ -70,13 +73,15 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
     };
     try {
       await API.graphql(gql(CreateCalendarEntry, { input }));
-      history.push(`/calendar/${format(startTime, 'yyyy-MM')}/`);
+      history.push(
+        pathToLastView || `/calendar/${format(startTime, 'yyyy-MM')}/`
+      );
     } catch (err) {
       console.log('error creating entry...', err);
       dispatch(endRequest());
     }
   };
-  const handleReset = () => history.push('/');
+  const handleReset = () => history.push(pathToLastView || '/');
 
   return (
     <form method="post" onSubmit={handleSubmit}>
@@ -145,11 +150,11 @@ export const CreateEventForm: React.FC<RouteComponentProps> = ({
             disabled={state.loading}
           ></textarea>
         </div>
+        <button type="reset" onClick={handleReset}>
+          Abbrechen
+        </button>
+        <button disabled={state.loading}>Absenden</button>
       </fieldset>
-      <button type="reset" onClick={handleReset}>
-        Abbrechen
-      </button>
-      <button disabled={state.loading}>Absenden</button>
     </form>
   );
 };
