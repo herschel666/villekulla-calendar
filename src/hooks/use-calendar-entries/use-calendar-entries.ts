@@ -51,6 +51,7 @@ export const useCalendarEntries = (month: string): Entries => {
 
     // TODO: enable this in development, when WebSockets are supported by the API mock
     if (process.env.NODE_ENV === 'production') {
+      console.log('Subscribing to %s...', month);
       subscriber = subscription.subscribe({
         next: (eventData) => {
           const event = eventData.value.data?.onCreateCalendarEntry;
@@ -62,7 +63,12 @@ export const useCalendarEntries = (month: string): Entries => {
       });
     }
 
-    return () => subscriber.unsubscribe();
+    return () => {
+      if (process.env.NODE_ENV === 'production') {
+        console.log('Unsubscribing from %s...', month);
+      }
+      subscriber.unsubscribe();
+    };
   }, [month, clientId]);
 
   return entries;
