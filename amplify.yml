@@ -30,10 +30,7 @@ test:
     test:
       commands:
         - npm test
-    postTest:
-      commands:
-        - echo "success" > test/artifact.txt
   artifacts:
-    baseDirectory: test
+    baseDirectory: .
     files:
       - '**/*'
