@@ -54,7 +54,7 @@
     "@types/react-datepicker": "2.11.0",
     "@types/react-dom": "16.9.6",
     "@types/react-modal": "3.10.5",
-    "@types/react-router-dom": "5.1.4",
+    "@types/react-router-dom": "5.1.5",
     "@types/uuid": "7.0.2",
     "aws-sdk": "2.663.0",
     "eslint": "6.8.0",
