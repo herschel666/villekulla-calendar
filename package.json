@@ -37,7 +37,7 @@
     "@fullcalendar/interaction": "4.4.0",
     "@fullcalendar/react": "4.4.0",
     "aws-amplify-react": "4.1.10",
-    "date-fns": "2.13.0",
+    "date-fns": "2.14.0",
     "react": "16.13.1",
     "react-datepicker": "2.16.0",
     "react-dom": "16.13.1",
