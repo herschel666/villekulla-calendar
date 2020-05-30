@@ -9,6 +9,10 @@
     {
       "packagePatterns": "^@aws-amplify",
       "groupName": ["@aws-amplify packages"]
+    },
+    {
+      "packagePatterns": "^@fullcalendar",
+      "groupName": ["@fullcalendar packages"]
     }
   ]
 }
