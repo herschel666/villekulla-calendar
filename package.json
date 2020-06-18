@@ -47,7 +47,7 @@
     "uuid": "8.1.0"
   },
   "devDependencies": {
-    "@testing-library/react": "10.2.1",
+    "@testing-library/react": "10.3.0",
     "@types/jest": "26.0.0",
     "@types/node": "13.13.12",
     "@types/react": "16.9.38",
